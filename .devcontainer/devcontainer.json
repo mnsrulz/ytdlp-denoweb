@@ -1,9 +1,4 @@
-{
-    "features": {
-        "ghcr.io/devcontainers/features/node": {
-            "version": "latest"
-        }
-    },    
+{  
     "customizations": {
         "vscode": {
             "extensions": ["humao.rest-client"]
