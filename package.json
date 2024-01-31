@@ -1,0 +1,17 @@
+{
+  "name": "ytdlp-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^4.26.0",
+    "youtube-dl-exec": "^2.5.6"
+  }
+}
