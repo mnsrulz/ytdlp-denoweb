@@ -1,2 +1,5 @@
-GET http://127.0.0.1:8002/ytapi/TIQ5hrfermg/stream.m3u8
+GET http://localhost:8000/ytapi/TIQ5hrfermg/stream.m3u8
 
+
+###
+GET  http://localhost:8000/ytapi/TIQ5hrfermg/stream.strm
