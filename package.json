@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "fastify": "^4.26.0",
+    "hls-parser": "^0.10.8",
     "youtube-dl-exec": "^2.5.6"
   }
 }
