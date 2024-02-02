@@ -2,7 +2,7 @@ import Fastify from "fastify";
 import ytdlp from "youtube-dl-exec";
 import HLS from 'hls-parser';
 const { MasterPlaylist } = HLS.types;
-
+  
 const app = Fastify({
   logger: true,
 });
@@ -28,6 +28,7 @@ app.get("/ytapi/:v/beststream.m3u8", async (request, reply) => {
   const manifestData = await fetch(manifestUrl).then(x => x.text());
   const parsedHls = HLS.parse(manifestData);
   var bestVariant = parsedHls.variants.sort((a, b) => b.bandwidth - a.bandwidth)[0];
+  bestVariant.subtitles = []
   const minimalPlaylist = new MasterPlaylist({ variants: [bestVariant] });
   const streamData = HLS.stringify(minimalPlaylist);
   return reply.send(streamData);
