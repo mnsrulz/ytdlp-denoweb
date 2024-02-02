@@ -40,6 +40,7 @@ app.get("/ytapi/:v/beststream.m3u8", async (request, reply) => {
     bestAvcVariant.subtitles = []
     const minimalPlaylist = new MasterPlaylist({ variants: [bestAvcVariant] });
     streamData = HLS.stringify(minimalPlaylist);
+    myCache.set(v, streamData);
   }
   return reply.send(streamData);
 });
