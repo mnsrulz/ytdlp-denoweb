@@ -4,6 +4,8 @@ import HLS from 'hls-parser';
 const { MasterPlaylist } = HLS.types;
 import NodeCache from "node-cache";
 
+const enableVp9 = process.env.ENABLE_VP9 == '1';
+
 const myCache = new NodeCache({
   stdTTL: process.env.DEFAULT_CACHE_TTL || 3 * 60 * 60 //3 hours
 });
@@ -34,11 +36,17 @@ app.get("/ytapi/:v/beststream.m3u8", async (request, reply) => {
     const manifestUrl = metadata.formats.find((x) => x.manifest_url)?.manifest_url;
     const manifestData = await fetch(manifestUrl).then(x => x.text());
     const parsedHls = HLS.parse(manifestData);
-    // var bestVp9Variant = parsedHls.variants.filter(x => x.codecs.startsWith('vp09')).sort((a, b) => b.bandwidth - a.bandwidth)[0];
-    // bestVp9Variant.subtitles = []
+
     var bestAvcVariant = parsedHls.variants.filter(x => x.codecs.startsWith('avc')).sort((a, b) => b.bandwidth - a.bandwidth)[0];
     bestAvcVariant.subtitles = []
     const minimalPlaylist = new MasterPlaylist({ variants: [bestAvcVariant] });
+
+    if (enableVp9) {
+      var bestVp9Variant = parsedHls.variants.filter(x => x.codecs.startsWith('vp09')).sort((a, b) => b.bandwidth - a.bandwidth)[0];
+      bestVp9Variant.subtitles = [];
+      minimalPlaylist.variants.push(bestVp9Variant);
+    }
+    
     streamData = HLS.stringify(minimalPlaylist);
     myCache.set(v, streamData);
   }
