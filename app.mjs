@@ -4,6 +4,7 @@ import HLS from 'hls-parser';
 const { MasterPlaylist } = HLS.types;
 import NodeCache from "node-cache";
 
+const enableAvc = process.env.ENABLE_AVC == '1';
 const enableVp9 = process.env.ENABLE_VP9 == '1';
 
 const myCache = new NodeCache({
@@ -37,16 +38,22 @@ app.get("/ytapi/:v/beststream.m3u8", async (request, reply) => {
     const manifestData = await fetch(manifestUrl).then(x => x.text());
     const parsedHls = HLS.parse(manifestData);
 
-    var bestAvcVariant = parsedHls.variants.filter(x => x.codecs.startsWith('avc')).sort((a, b) => b.bandwidth - a.bandwidth)[0];
-    bestAvcVariant.subtitles = []
-    const minimalPlaylist = new MasterPlaylist({ variants: [bestAvcVariant] });
+    var variants = [];
+
+    if (enableAvc || !enableVp9) {    //either avc is enabled or vp9 is disabled
+      var bestAvcVariant = parsedHls.variants.filter(x => x.codecs.startsWith('avc')).sort((a, b) => b.bandwidth - a.bandwidth)[0];
+      bestAvcVariant.subtitles = [];
+      variants.push(bestAvcVariant);
+    }
 
     if (enableVp9) {
       var bestVp9Variant = parsedHls.variants.filter(x => x.codecs.startsWith('vp09')).sort((a, b) => b.bandwidth - a.bandwidth)[0];
       bestVp9Variant.subtitles = [];
-      minimalPlaylist.variants.push(bestVp9Variant);
+      variants.push(bestVp9Variant);
     }
-    
+
+    const minimalPlaylist = new MasterPlaylist({ variants: variants });
+
     streamData = HLS.stringify(minimalPlaylist);
     myCache.set(v, streamData);
   }
